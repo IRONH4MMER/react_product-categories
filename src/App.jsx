@@ -1,3 +1,4 @@
+/* eslint-disable function-paren-newline */
 /* eslint-disable implicit-arrow-linebreak */
 /* eslint-disable arrow-parens */
 /* eslint-disable max-len */
@@ -32,8 +33,9 @@ const products = productsFromServer.map(product => {
   };
 });
 
-function getPreparedProducts(productsArr, filterByUser) {
+function getPreparedProducts(productsArr, filterByUser = '', query = '') {
   let preparedProducts = [...productsArr];
+  const normalizedQuerry = query.trim().toLowerCase();
 
   preparedProducts = preparedProducts.filter(prod => {
     if (filterByUser === '') {
@@ -43,12 +45,17 @@ function getPreparedProducts(productsArr, filterByUser) {
     return prod.category.ownerId === filterByUser;
   });
 
+  preparedProducts = preparedProducts.filter(prod =>
+    prod.name.toLowerCase().includes(normalizedQuerry),
+  );
+
   return preparedProducts;
 }
 
 export const App = () => {
   const [filterByUser, setFilterByUser] = useState('');
-  const visibleProds = getPreparedProducts(products, filterByUser);
+  const [query, setQuery] = useState('');
+  const visibleProds = getPreparedProducts(products, filterByUser, query);
 
   return (
     <div className="section">
@@ -64,6 +71,7 @@ export const App = () => {
                 data-cy="FilterAllUsers"
                 href="#/"
                 onClick={() => setFilterByUser('')}
+                className={cn({ 'is-active': filterByUser === '' })}
               >
                 All
               </a>
@@ -73,6 +81,7 @@ export const App = () => {
                   data-cy="FilterUser"
                   href="#/"
                   key={user.id}
+                  className={cn({ 'is-active': user.id === filterByUser })}
                   onClick={() => setFilterByUser(user.id)}
                 >
                   {user.name}
@@ -87,7 +96,7 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  value="qwe"
+                  onClick={event => setQuery(event.target.value)}
                 />
 
                 <span className="icon is-left">
