@@ -45,9 +45,11 @@ function getPreparedProducts(productsArr, filterByUser = '', query = '') {
     return prod.category.ownerId === filterByUser;
   });
 
-  preparedProducts = preparedProducts.filter(prod =>
-    prod.name.toLowerCase().includes(normalizedQuerry),
-  );
+  if (query !== '') {
+    preparedProducts = preparedProducts.filter(prod =>
+      prod.name.toLowerCase().includes(normalizedQuerry),
+    );
+  }
 
   return preparedProducts;
 }
@@ -96,7 +98,7 @@ export const App = () => {
                   type="text"
                   className="input"
                   placeholder="Search"
-                  onClick={event => setQuery(event.target.value)}
+                  onChange={event => setQuery(event.target.value)}
                 />
 
                 <span className="icon is-left">
